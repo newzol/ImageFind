@@ -14,13 +14,25 @@ int main(int argc, const char * argv[]) {
     cv::Mat srcImage,destImage;
     cv::Mat osrcImage,odestImage;
     ////Users//danliu//Documents/dev//
-    srcImage =cv::imread("//Users//danliu//Documents/dev//linxinru.jpeg");// 加载图片文件
+    char szHome[128]={0};
+    snprintf(szHome, 128, "%s//%s",getenv("HOME"),"//Documents//dev");
+    std::string strPath(szHome);
+    strPath.append("//linxinru.jpg");
+    srcImage =cv::imread(strPath.c_str());// 加载图片文件
     if(NULL==srcImage.data) //校验是否加载的图像为空
     {
-        std::cout<<"加载图片失败"<<std::endl;
+        std::cout<<"加载图片失败"<<__LINE__<<std::endl;
         return -1;
     }
-    destImage= cv::imread("//Users//danliu//Documents/dev//linxinru.jpeg");// 加载图片文件
+     std::string desPath(szHome);
+    desPath.append("//pengyuyan.jpeg");
+    destImage= cv::imread(desPath.c_str());// 加载图片文件
+    if(NULL==destImage.data) //校验是否加载的图像为空
+    {
+        std::cout<<"加载图片失败"<<__LINE__<<std::endl;
+        std::cout<<getenv("HOME")<<std::endl;
+        return -1;
+    }
     CHistGram myhist;
    // myhist.showImage("dest", destImage, 5000);
     myhist.colorReduce_con(srcImage, osrcImage, 64);
@@ -28,11 +40,11 @@ int main(int argc, const char * argv[]) {
     cv::MatND srcHist,destHist;
     myhist.CalcHistImage(srcImage, srcHist, 1);
     myhist.CalcHistImage(destImage, destHist, 1);
-    myhist.showImage("dest", destImage, 5000);
+    //myhist.showImage("dest", destImage, 5000);
     cv::normalize(srcHist, srcHist);
     cv::normalize(destHist, destHist);
     double dist1;
-    dist1=cv::compareHist(srcHist,destHist,CV_COMP_BHATTACHARYYA);
+    dist1=cv::compareHist(srcHist,destHist,CV_COMP_CORREL);//CV_COMP_BHATTACHARYYA);
     if(dist1 >0.5)
     {
         std::cout<<"MATCH"<<std::endl;
